@@ -1,15 +1,28 @@
 package com.pavelitelprojects.tutorbot.service.handler;
 
+import com.pavelitelprojects.tutorbot.service.factory.KeyboardFactory;
 import com.pavelitelprojects.tutorbot.telegram.Bot;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
+import java.util.List;
+
 import static com.pavelitelprojects.tutorbot.service.data.Command.*;
 
 @Service
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CommandHandler {
+    final KeyboardFactory keyboardFactory;
+    @Autowired
+    public CommandHandler(KeyboardFactory keyboardFactory) {
+        this.keyboardFactory = keyboardFactory;
+    }
+
     public BotApiMethod<?> answer(Message message, Bot bot) {
         String command = message.getText();
         switch (command) {
@@ -69,6 +82,11 @@ public class CommandHandler {
     private BotApiMethod<?> start(Message message) {
         return SendMessage.builder()
                 .chatId(message.getChatId())
+                .replyMarkup(keyboardFactory.getInlineKeyboard(
+                        List.of("Помощь", "Обратная связь"),
+                        List.of(2),
+                        List.of("help", "feedback")
+                ))
                 .text("""
                         🖖Приветствую в Tutor-Bot, инструменте для упрощения взаимодействия репититора и ученика.
                                                 
