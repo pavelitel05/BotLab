@@ -2,6 +2,7 @@ package com.pavelitelprojects.tutorbot.service.handler;
 
 import com.pavelitelprojects.tutorbot.service.manager.feedback.FeedbackManager;
 import com.pavelitelprojects.tutorbot.service.manager.help.HelpManager;
+import com.pavelitelprojects.tutorbot.service.manager.progress_control.ProgressControlManager;
 import com.pavelitelprojects.tutorbot.service.manager.task.TaskManager;
 import com.pavelitelprojects.tutorbot.service.manager.timetable.TimetableManager;
 import com.pavelitelprojects.tutorbot.telegram.Bot;
@@ -21,15 +22,18 @@ public class CallbackQueryHandler {
     final FeedbackManager feedbackManager;
     final TimetableManager timetableManager;
     final TaskManager taskManager;
+    final ProgressControlManager progressControlManager;
     @Autowired
     public CallbackQueryHandler(HelpManager helpManager,
                                 FeedbackManager feedbackManager,
                                 TimetableManager timetableManager,
-                                TaskManager taskManager) {
+                                TaskManager taskManager,
+                                ProgressControlManager progressControlManager) {
         this.helpManager = helpManager;
         this.feedbackManager = feedbackManager;
         this.timetableManager = timetableManager;
         this.taskManager = taskManager;
+        this.progressControlManager = progressControlManager;
     }
 
     public BotApiMethod<?> answer(CallbackQuery callbackQuery, Bot bot) {
@@ -40,6 +44,9 @@ public class CallbackQueryHandler {
         }
         if (TASK.equals(keyWord)) {
             return taskManager.answerCallbackQuery(callbackQuery, bot);
+        }
+        if (PROGRESS.equals(keyWord)) {
+            return progressControlManager.answerCallbackQuery(callbackQuery, bot);
         }
         switch (callbackData) {
             case FEEDBACK -> {
