@@ -1,7 +1,9 @@
-package com.pavelitelprojects.tutorbot.service.manager;
+package com.pavelitelprojects.tutorbot.service.manager.feedback;
 
 import com.pavelitelprojects.tutorbot.service.factory.AnswerMethodFactory;
 import com.pavelitelprojects.tutorbot.service.factory.KeyboardFactory;
+import com.pavelitelprojects.tutorbot.service.manager.AbstractManager;
+import com.pavelitelprojects.tutorbot.telegram.Bot;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +14,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class FeedbackManager {
+public class FeedbackManager extends AbstractManager {
     final AnswerMethodFactory methodFactory;
     final KeyboardFactory keyboardFactory;
 
@@ -22,8 +24,8 @@ public class FeedbackManager {
         this.methodFactory = methodFactory;
         this.keyboardFactory = keyboardFactory;
     }
-
-    public BotApiMethod<?> answerCommand(Message message) {
+    @Override
+    public BotApiMethod<?> answerCommand(Message message, Bot bot) {
         return methodFactory.getSendMessage(
                 message.getChatId(),
                 """
@@ -35,8 +37,8 @@ public class FeedbackManager {
                 null
         );
     }
-
-    public BotApiMethod<?> answerCallbackQuery(CallbackQuery callbackQuery) {
+    @Override
+    public BotApiMethod<?> answerCallbackQuery(CallbackQuery callbackQuery, Bot bot) {
         return methodFactory.getEditeMessageText(
                 callbackQuery,
                 """
@@ -47,6 +49,10 @@ public class FeedbackManager {
                         """,
                 null
         );
+    }
+    @Override
+    public BotApiMethod<?> answerMessage(Message message, Bot bot) {
+        return null;
     }
 
 }

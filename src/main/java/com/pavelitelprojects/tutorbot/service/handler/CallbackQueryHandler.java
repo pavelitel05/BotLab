@@ -1,7 +1,9 @@
 package com.pavelitelprojects.tutorbot.service.handler;
 
-import com.pavelitelprojects.tutorbot.service.manager.FeedbackManager;
-import com.pavelitelprojects.tutorbot.service.manager.HelpManager;
+import com.pavelitelprojects.tutorbot.service.manager.feedback.FeedbackManager;
+import com.pavelitelprojects.tutorbot.service.manager.help.HelpManager;
+import com.pavelitelprojects.tutorbot.service.manager.task.TaskManager;
+import com.pavelitelprojects.tutorbot.service.manager.timetable.TimetableManager;
 import com.pavelitelprojects.tutorbot.telegram.Bot;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -17,21 +19,34 @@ import static com.pavelitelprojects.tutorbot.service.data.CallbackData.*;
 public class CallbackQueryHandler {
     final HelpManager helpManager;
     final FeedbackManager feedbackManager;
+    final TimetableManager timetableManager;
+    final TaskManager taskManager;
     @Autowired
     public CallbackQueryHandler(HelpManager helpManager,
-                                FeedbackManager feedbackManager) {
+                                FeedbackManager feedbackManager,
+                                TimetableManager timetableManager,
+                                TaskManager taskManager) {
         this.helpManager = helpManager;
         this.feedbackManager = feedbackManager;
+        this.timetableManager = timetableManager;
+        this.taskManager = taskManager;
     }
 
     public BotApiMethod<?> answer(CallbackQuery callbackQuery, Bot bot) {
         String callbackData = callbackQuery.getData();
+        String keyWord = callbackData.split("_")[0];
+        if (TIMETABLE.equals(keyWord)) {
+            return timetableManager.answerCallbackQuery(callbackQuery, bot);
+        }
+        if (TASK.equals(keyWord)) {
+            return taskManager.answerCallbackQuery(callbackQuery, bot);
+        }
         switch (callbackData) {
             case FEEDBACK -> {
-                return feedbackManager.answerCallbackQuery(callbackQuery);
+                return feedbackManager.answerCallbackQuery(callbackQuery, bot);
             }
             case HELP -> {
-                return helpManager.answerCallbackQuery(callbackQuery);
+                return helpManager.answerCallbackQuery(callbackQuery, bot);
             }
         }
         return null;

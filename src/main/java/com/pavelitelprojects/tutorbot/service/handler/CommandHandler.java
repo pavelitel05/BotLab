@@ -1,8 +1,10 @@
 package com.pavelitelprojects.tutorbot.service.handler;
 
-import com.pavelitelprojects.tutorbot.service.manager.FeedbackManager;
-import com.pavelitelprojects.tutorbot.service.manager.HelpManager;
-import com.pavelitelprojects.tutorbot.service.manager.StartManager;
+import com.pavelitelprojects.tutorbot.service.manager.feedback.FeedbackManager;
+import com.pavelitelprojects.tutorbot.service.manager.help.HelpManager;
+import com.pavelitelprojects.tutorbot.service.manager.start.StartManager;
+import com.pavelitelprojects.tutorbot.service.manager.task.TaskManager;
+import com.pavelitelprojects.tutorbot.service.manager.timetable.TimetableManager;
 import com.pavelitelprojects.tutorbot.telegram.Bot;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -21,26 +23,38 @@ public class CommandHandler {
     final FeedbackManager feedbackManager;
     final HelpManager helpManager;
     final StartManager startManager;
+    final TimetableManager timetableManager;
+    final TaskManager taskManager;
     @Autowired
     public CommandHandler(FeedbackManager feedbackManager,
                           HelpManager helpManager,
-                          StartManager startManager) {
+                          StartManager startManager,
+                          TimetableManager timetableManager,
+                          TaskManager taskManager) {
         this.feedbackManager = feedbackManager;
         this.helpManager = helpManager;
         this.startManager = startManager;
+        this.timetableManager = timetableManager;
+        this.taskManager = taskManager;
     }
 
     public BotApiMethod<?> answer(Message message, Bot bot) {
         String command = message.getText();
         switch (command) {
             case START -> {
-                return startManager.answerCommand(message);
+                return startManager.answerCommand(message, bot);
             }
             case FEEDBACK_COMMAND -> {
-                return feedbackManager.answerCommand(message);
+                return feedbackManager.answerCommand(message, bot);
             }
             case HELP_COMMAND -> {
-                return helpManager.answerCommand(message);
+                return helpManager.answerCommand(message, bot);
+            }
+            case TIMETABLE -> {
+                return timetableManager.answerCommand(message, bot);
+            }
+            case TASK -> {
+                return taskManager.answerCommand(message, bot);
             }
             default -> {
                 return defaultAnswer(message);
