@@ -1,6 +1,6 @@
 package com.pavelitelprojects.tutorbot.service;
 
-import com.pavelitelprojects.tutorbot.entity.User;
+import com.pavelitelprojects.tutorbot.entity.user.User;
 import com.pavelitelprojects.tutorbot.repository.UserRepo;
 import com.pavelitelprojects.tutorbot.service.handler.CallbackQueryHandler;
 import com.pavelitelprojects.tutorbot.service.handler.CommandHandler;
@@ -22,17 +22,14 @@ public class UpdateDispatcher {
     final MessageHandler messageHandler;
     final CommandHandler commandHandler;
     final CallbackQueryHandler callbackQueryHandler;
-    final UserRepo userRepo;
 
     @Autowired
     public UpdateDispatcher(MessageHandler messageHandler,
                             CommandHandler commandHandler,
-                            CallbackQueryHandler callbackQueryHandler,
-                            UserRepo userRepo) {
+                            CallbackQueryHandler callbackQueryHandler) {
         this.messageHandler = messageHandler;
         this.commandHandler = commandHandler;
         this.callbackQueryHandler = callbackQueryHandler;
-        this.userRepo = userRepo;
     }
 
     public BotApiMethod<?> distribute(Update update, Bot bot) {
@@ -42,9 +39,6 @@ public class UpdateDispatcher {
         if (update.hasMessage()) {
             Message message = update.getMessage();
             if (message.hasText()) {
-                userRepo.save(User.builder()
-                        .chatId(message.getChatId())
-                        .build());
                 if (message.getText().charAt(0) == '/') {
                     return commandHandler.answer(message, bot);
                 }
