@@ -12,7 +12,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "timetable")
+@Table(name = "tasks")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Task {
     @Id
