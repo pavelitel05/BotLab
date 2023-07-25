@@ -1,5 +1,5 @@
 package com.pavelitelprojects.tutorbot.entity.timetable;
 
 public enum WeekDay {
-    MONDAY;
+    MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY;
 }

@@ -2,6 +2,7 @@ package com.pavelitelprojects.tutorbot.service.handler;
 
 import com.pavelitelprojects.tutorbot.service.manager.feedback.FeedbackManager;
 import com.pavelitelprojects.tutorbot.service.manager.help.HelpManager;
+import com.pavelitelprojects.tutorbot.service.manager.profile.ProfileManager;
 import com.pavelitelprojects.tutorbot.service.manager.progress_control.ProgressControlManager;
 import com.pavelitelprojects.tutorbot.service.manager.start.StartManager;
 import com.pavelitelprojects.tutorbot.service.manager.task.TaskManager;
@@ -24,6 +25,7 @@ public class CommandHandler {
     final FeedbackManager feedbackManager;
     final HelpManager helpManager;
     final StartManager startManager;
+    final ProfileManager profileManager;
     final TimetableManager timetableManager;
     final TaskManager taskManager;
     final ProgressControlManager progressControlManager;
@@ -33,13 +35,15 @@ public class CommandHandler {
                           StartManager startManager,
                           TimetableManager timetableManager,
                           TaskManager taskManager,
-                          ProgressControlManager progressControlManager) {
+                          ProgressControlManager progressControlManager,
+                          ProfileManager profileManager) {
         this.feedbackManager = feedbackManager;
         this.helpManager = helpManager;
         this.startManager = startManager;
         this.timetableManager = timetableManager;
         this.taskManager = taskManager;
         this.progressControlManager = progressControlManager;
+        this.profileManager = profileManager;
     }
 
     public BotApiMethod<?> answer(Message message, Bot bot) {
@@ -62,6 +66,9 @@ public class CommandHandler {
             }
             case PROGRESS -> {
                 return progressControlManager.answerCommand(message, bot);
+            }
+            case PROFILE -> {
+                return profileManager.answerCommand(message, bot);
             }
             default -> {
                 return defaultAnswer(message);
