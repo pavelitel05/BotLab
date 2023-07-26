@@ -43,17 +43,20 @@ public class CallbackQueryHandler {
     public BotApiMethod<?> answer(CallbackQuery callbackQuery, Bot bot) {
         String callbackData = callbackQuery.getData();
         String keyWord = callbackData.split("_")[0];
-        if (TIMETABLE.equals(keyWord)) {
-            return timetableManager.answerCallbackQuery(callbackQuery, bot);
-        }
-        if (TASK.equals(keyWord)) {
-            return taskManager.answerCallbackQuery(callbackQuery, bot);
-        }
-        if (PROGRESS.equals(keyWord)) {
-            return progressControlManager.answerCallbackQuery(callbackQuery, bot);
-        }
-        if (AUTH.equals(keyWord)) {
-            return authManager.answerCallbackQuery(callbackQuery, bot);
+        switch (keyWord) {
+            case TIMETABLE -> {
+                return timetableManager.answerCallbackQuery(callbackQuery, bot);
+            }
+            case TASK -> {
+                return taskManager.answerCallbackQuery(callbackQuery, bot);
+            }
+            case PROGRESS -> {
+                return progressControlManager.answerCallbackQuery(callbackQuery, bot);
+
+            }
+            case AUTH -> {
+                return authManager.answerCallbackQuery(callbackQuery, bot);
+            }
         }
         switch (callbackData) {
             case FEEDBACK -> {

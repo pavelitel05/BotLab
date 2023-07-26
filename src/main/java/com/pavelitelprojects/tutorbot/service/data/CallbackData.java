@@ -18,4 +18,8 @@ public class CallbackData {
     public static final String AUTH_TEACHER = "auth_teacher";
     public static final String AUTH_STUDENT = "auth_student";
     public static final String AUTH = "auth";
+
+
+    public static final String PROFILE_REFRESH_TOKEN = "profile_refresh_token";
+    public static final String PROFILE = "profile";
 }

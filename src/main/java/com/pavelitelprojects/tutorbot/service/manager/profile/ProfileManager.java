@@ -6,12 +6,15 @@ import com.pavelitelprojects.tutorbot.service.manager.AbstractManager;
 import com.pavelitelprojects.tutorbot.telegram.Bot;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
+
+@Slf4j
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProfileManager extends AbstractManager {
@@ -43,7 +46,7 @@ public class ProfileManager extends AbstractManager {
     private BotApiMethod<?> showProfile(Message message) {
         Long chatId = message.getChatId();
         StringBuilder text = new StringBuilder("\uD83D\uDC64 Профиль\n");
-        var user = userRepo.findById(chatId).orElseThrow();
+        var user = userRepo.findUserByChatId(chatId);
         var details = user.getDetails();
 
         if (details.getUsername() == null) {
@@ -52,7 +55,7 @@ public class ProfileManager extends AbstractManager {
             text.append("▪\uFE0FИмя пользователя - ").append(details.getFirstName());
         }
         text.append("\n▪\uFE0FРоль -").append(user.getRole().name());
-        text.append("\n▪\uFE0FВаш уникальный токен - \n").append(user.getToken().toString());
+        text.append("\n▪\uFE0FВаш уникальный токен - \n").append(user.getToken());
         text.append("\n\n⚠\uFE0F - токен необходим для того, чтобы ученик или преподаватель могли установиться между собой связь");
         return methodFactory.getSendMessage(
                 chatId,

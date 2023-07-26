@@ -22,7 +22,7 @@ public class User {
     Long chatId;
 
     @Column(name = "token", unique = true)
-    UUID token;
+    String token;
 
     @Enumerated(EnumType.STRING)
     Role role;
@@ -45,7 +45,7 @@ public class User {
     @PrePersist
     private void generateUniqueToken() {
         if (token == null) {
-            token = UUID.randomUUID();
+            token = String.valueOf(UUID.randomUUID());
         }
     }
 }
