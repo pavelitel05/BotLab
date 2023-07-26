@@ -4,6 +4,7 @@ import com.pavelitelprojects.tutorbot.service.manager.feedback.FeedbackManager;
 import com.pavelitelprojects.tutorbot.service.manager.help.HelpManager;
 import com.pavelitelprojects.tutorbot.service.manager.profile.ProfileManager;
 import com.pavelitelprojects.tutorbot.service.manager.progress_control.ProgressControlManager;
+import com.pavelitelprojects.tutorbot.service.manager.search.SearchManager;
 import com.pavelitelprojects.tutorbot.service.manager.start.StartManager;
 import com.pavelitelprojects.tutorbot.service.manager.task.TaskManager;
 import com.pavelitelprojects.tutorbot.service.manager.timetable.TimetableManager;
@@ -29,6 +30,7 @@ public class CommandHandler {
     final TimetableManager timetableManager;
     final TaskManager taskManager;
     final ProgressControlManager progressControlManager;
+    final SearchManager searchManager;
     @Autowired
     public CommandHandler(FeedbackManager feedbackManager,
                           HelpManager helpManager,
@@ -36,7 +38,8 @@ public class CommandHandler {
                           TimetableManager timetableManager,
                           TaskManager taskManager,
                           ProgressControlManager progressControlManager,
-                          ProfileManager profileManager) {
+                          ProfileManager profileManager,
+                          SearchManager searchManager) {
         this.feedbackManager = feedbackManager;
         this.helpManager = helpManager;
         this.startManager = startManager;
@@ -44,6 +47,7 @@ public class CommandHandler {
         this.taskManager = taskManager;
         this.progressControlManager = progressControlManager;
         this.profileManager = profileManager;
+        this.searchManager = searchManager;
     }
 
     public BotApiMethod<?> answer(Message message, Bot bot) {
@@ -69,6 +73,9 @@ public class CommandHandler {
             }
             case PROFILE -> {
                 return profileManager.answerCommand(message, bot);
+            }
+            case SEARCH -> {
+                return searchManager.answerCommand(message, bot);
             }
             default -> {
                 return defaultAnswer(message);

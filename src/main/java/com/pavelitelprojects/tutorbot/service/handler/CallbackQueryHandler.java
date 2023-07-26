@@ -3,7 +3,9 @@ package com.pavelitelprojects.tutorbot.service.handler;
 import com.pavelitelprojects.tutorbot.service.manager.auth.AuthManager;
 import com.pavelitelprojects.tutorbot.service.manager.feedback.FeedbackManager;
 import com.pavelitelprojects.tutorbot.service.manager.help.HelpManager;
+import com.pavelitelprojects.tutorbot.service.manager.profile.ProfileManager;
 import com.pavelitelprojects.tutorbot.service.manager.progress_control.ProgressControlManager;
+import com.pavelitelprojects.tutorbot.service.manager.search.SearchManager;
 import com.pavelitelprojects.tutorbot.service.manager.task.TaskManager;
 import com.pavelitelprojects.tutorbot.service.manager.timetable.TimetableManager;
 import com.pavelitelprojects.tutorbot.telegram.Bot;
@@ -24,6 +26,8 @@ public class CallbackQueryHandler {
     final TimetableManager timetableManager;
     final TaskManager taskManager;
     final AuthManager authManager;
+    final ProfileManager profileManager;
+    final SearchManager searchManager;
     final ProgressControlManager progressControlManager;
     @Autowired
     public CallbackQueryHandler(HelpManager helpManager,
@@ -31,13 +35,17 @@ public class CallbackQueryHandler {
                                 TimetableManager timetableManager,
                                 TaskManager taskManager,
                                 ProgressControlManager progressControlManager,
-                                AuthManager authManager) {
+                                AuthManager authManager,
+                                ProfileManager profileManager,
+                                SearchManager searchManager) {
         this.helpManager = helpManager;
         this.feedbackManager = feedbackManager;
         this.timetableManager = timetableManager;
         this.taskManager = taskManager;
         this.progressControlManager = progressControlManager;
         this.authManager = authManager;
+        this.profileManager = profileManager;
+        this.searchManager = searchManager;
     }
 
     public BotApiMethod<?> answer(CallbackQuery callbackQuery, Bot bot) {
@@ -52,10 +60,15 @@ public class CallbackQueryHandler {
             }
             case PROGRESS -> {
                 return progressControlManager.answerCallbackQuery(callbackQuery, bot);
-
             }
             case AUTH -> {
                 return authManager.answerCallbackQuery(callbackQuery, bot);
+            }
+            case PROFILE -> {
+                return profileManager.answerCallbackQuery(callbackQuery, bot);
+            }
+            case SEARCH -> {
+                return searchManager.answerCallbackQuery(callbackQuery, bot);
             }
         }
         switch (callbackData) {

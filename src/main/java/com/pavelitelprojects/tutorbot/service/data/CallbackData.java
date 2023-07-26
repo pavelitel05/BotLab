@@ -19,6 +19,8 @@ public class CallbackData {
     public static final String AUTH_STUDENT = "auth_student";
     public static final String AUTH = "auth";
 
+    public static final String SEARCH_CANCEL = "search_cancel";
+    public static final String SEARCH = "search";
 
     public static final String PROFILE_REFRESH_TOKEN = "profile_refresh_token";
     public static final String PROFILE = "profile";
