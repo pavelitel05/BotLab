@@ -1,9 +1,11 @@
 package com.pavelitelprojects.tutorbot.entity.timetable;
 
+import com.pavelitelprojects.tutorbot.entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -34,4 +36,12 @@ public class TimeTable {
 
     @Column(name = "minute")
     Short minute;
+
+    @ManyToMany
+    @JoinTable(
+            joinColumns = @JoinColumn(name = "timetable_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"),
+            name = "users_timetable"
+    )
+    List<User> users;
 }
