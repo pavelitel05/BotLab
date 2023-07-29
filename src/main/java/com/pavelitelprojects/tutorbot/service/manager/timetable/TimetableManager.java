@@ -17,7 +17,10 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 import static com.pavelitelprojects.tutorbot.service.data.CallbackData.*;
 
 
@@ -28,6 +31,7 @@ public class TimetableManager extends AbstractManager {
     final KeyboardFactory keyboardFactory;
     final UserRepo userRepo;
     final TimeTableRepo timeTableRepo;
+
     @Autowired
     public TimetableManager(AnswerMethodFactory methodFactory,
                             KeyboardFactory keyboardFactory,
@@ -52,6 +56,21 @@ public class TimetableManager extends AbstractManager {
     @Override
     public BotApiMethod<?> answerCallbackQuery(CallbackQuery callbackQuery, Bot bot) {
         String callbackData = callbackQuery.getData();
+        String[] splitCallbackData = callbackData.split("_");
+        if (splitCallbackData.length > 1 && "add".equals(splitCallbackData[1])) {
+            if (splitCallbackData.length == 2 || splitCallbackData.length == 3) {
+                return add(callbackQuery, splitCallbackData);
+            }
+            switch (splitCallbackData[2]) {
+                case WEEKDAY -> {
+                    return addWeekDay(callbackQuery, splitCallbackData);
+                }
+                case HOUR -> {
+                    return null;
+                }
+            }
+
+        }
         switch (callbackData) {
             case TIMETABLE -> {
                 return mainMenu(callbackQuery);
@@ -62,9 +81,6 @@ public class TimetableManager extends AbstractManager {
             case TIMETABLE_REMOVE -> {
                 return remove(callbackQuery);
             }
-            case TIMETABLE_ADD -> {
-                return add(callbackQuery);
-            }
             case TIMETABLE_1, TIMETABLE_2, TIMETABLE_3,
                     TIMETABLE_4, TIMETABLE_5, TIMETABLE_6,
                     TIMETABLE_7 -> {
@@ -73,6 +89,38 @@ public class TimetableManager extends AbstractManager {
         }
         return null;
     }
+
+    private BotApiMethod<?> addWeekDay(CallbackQuery callbackQuery, String[] data) {
+        UUID id = UUID.fromString(data[4]);
+        var timeTable = timeTableRepo.findTimeTableById(id);
+        switch (data[3]) {
+            case "1" -> timeTable.setWeekDay(WeekDay.MONDAY);
+            case "2" -> timeTable.setWeekDay(WeekDay.TUESDAY);
+            case "3" -> timeTable.setWeekDay(WeekDay.WEDNESDAY);
+            case "4" -> timeTable.setWeekDay(WeekDay.THURSDAY);
+            case "5" -> timeTable.setWeekDay(WeekDay.FRIDAY);
+            case "6" -> timeTable.setWeekDay(WeekDay.SATURDAY);
+            case "7" -> timeTable.setWeekDay(WeekDay.SUNDAY);
+        }
+        List<String> buttonsData = new ArrayList<>();
+        List<String> text = new ArrayList<>();
+        for (int i = 1; i <= 24; i++) {
+            text.add(String.valueOf(i));
+            buttonsData.add(TIMETABLE_ADD_HOUR + i + "_" + data[4]);
+        }
+        buttonsData.add(TIMETABLE_ADD + "_" + data[4]);
+        text.add("Назад");
+        return methodFactory.getEditeMessageText(
+                callbackQuery,
+                "Выберете час",
+                keyboardFactory.getInlineKeyboard(
+                        text,
+                        List.of(6, 6, 6, 6, 1),
+                        buttonsData
+                )
+        );
+    }
+
     private BotApiMethod<?> mainMenu(Message message) {
         var user = userRepo.findUserByChatId(message.getChatId());
         if (user.getRole() == Role.STUDENT) {
@@ -126,10 +174,11 @@ public class TimetableManager extends AbstractManager {
                 )
         );
     }
+
     private BotApiMethod<?> showDay(CallbackQuery callbackQuery) {
         var user = userRepo.findUserByChatId(callbackQuery.getMessage().getChatId());
         WeekDay weekDay = WeekDay.MONDAY;
-        switch (callbackQuery.getData().split("_")[1]){
+        switch (callbackQuery.getData().split("_")[1]) {
             case "2" -> weekDay = WeekDay.TUESDAY;
             case "3" -> weekDay = WeekDay.WEDNESDAY;
             case "4" -> weekDay = WeekDay.THURSDAY;
@@ -144,7 +193,7 @@ public class TimetableManager extends AbstractManager {
             text.append("У вас нет занятий в этот день!");
         } else {
             text.append("Ваши занятия сегодня:\n\n");
-            for (TimeTable t: timeTableList) {
+            for (TimeTable t : timeTableList) {
                 text.append("▪\uFE0F ")
                         .append(t.getHour())
                         .append(":")
@@ -158,7 +207,7 @@ public class TimetableManager extends AbstractManager {
                 callbackQuery,
                 text.toString(),
                 keyboardFactory.getInlineKeyboard(
-                        List.of("Назад"),
+                        List.of("\uD83D\uDD19Назад"),
                         List.of(1),
                         List.of(TIMETABLE_SHOW)
                 )
@@ -167,7 +216,7 @@ public class TimetableManager extends AbstractManager {
 
     private BotApiMethod<?> show(CallbackQuery callbackQuery) {
         return methodFactory.getEditeMessageText(
-          callbackQuery,
+                callbackQuery,
                 """
                         📆 Выберете день недели""",
                 keyboardFactory.getInlineKeyboard(
@@ -177,22 +226,38 @@ public class TimetableManager extends AbstractManager {
                         ),
                         List.of(7, 1),
                         List.of(
-                                TIMETABLE_1, TIMETABLE_2, TIMETABLE_3, TIMETABLE_4, TIMETABLE_5, TIMETABLE_6, TIMETABLE_7,
+                                TIMETABLE_1, TIMETABLE_2, TIMETABLE_3,
+                                TIMETABLE_4, TIMETABLE_5, TIMETABLE_6, TIMETABLE_7,
                                 TIMETABLE
                         )
                 )
         );
     }
 
-    private BotApiMethod<?> add(CallbackQuery callbackQuery) {
+    private BotApiMethod<?> add(CallbackQuery callbackQuery, String[] splitCallbackData) {
+        String id = "";
+        if (splitCallbackData.length == 2) {
+            TimeTable timeTable = TimeTable.builder()
+                    .users(List.of(userRepo.findUserByChatId(callbackQuery.getMessage().getChatId())))
+                    .build();
+            id = timeTableRepo.save(timeTable).getId().toString();
+        } else {
+            id = splitCallbackData[2];
+        }
+        List<String> data = new ArrayList<>();
+        for (int i = 1; i <= 7; i++) {
+            data.add(TIMETABLE_ADD_WEEKDAY + i + "_" + id);
+        }
+        data.add(TIMETABLE);
         return methodFactory.getEditeMessageText(
                 callbackQuery,
                 """
                         ✏️ Выберете день, в который хотите добавить занятие:""",
                 keyboardFactory.getInlineKeyboard(
-                        List.of("Назад"),
-                        List.of(1),
-                        List.of(TIMETABLE)
+                        List.of("Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье",
+                                "\uD83D\uDD19Назад"),
+                        List.of(7, 1),
+                        data
                 )
         );
     }
@@ -203,7 +268,7 @@ public class TimetableManager extends AbstractManager {
                 """
                         ✂️ Выберете занятие, которое хотите удалить из вашего расписания""",
                 keyboardFactory.getInlineKeyboard(
-                        List.of("Назад"),
+                        List.of("\uD83D\uDD19Назад"),
                         List.of(1),
                         List.of(TIMETABLE)
                 )

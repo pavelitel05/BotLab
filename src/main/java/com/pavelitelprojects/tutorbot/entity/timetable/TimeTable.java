@@ -34,6 +34,9 @@ public class TimeTable {
     @Column(name = "hour")
     Short hour;
 
+    @Column(name = "in_creation")
+    Boolean inCreation;
+
     @Column(name = "minute")
     Short minute;
 

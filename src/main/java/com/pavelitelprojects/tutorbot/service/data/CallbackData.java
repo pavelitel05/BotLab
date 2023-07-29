@@ -12,6 +12,12 @@ public class CallbackData {
     public static final String TIMETABLE_5 = "timetable_5";
     public static final String TIMETABLE_6 = "timetable_6";
     public static final String TIMETABLE_7 = "timetable_7";
+
+    public static final String TIMETABLE_ADD_WEEKDAY = "timetable_add_weekday_";
+    public static final String WEEKDAY = "weekday";
+    public static final String HOUR = "hour";
+    public static final String TIMETABLE_ADD_HOUR = "timetable_add_hour_";
+
     public static final String TIMETABLE_SHOW = "timetable_show";
     public static final String TIMETABLE_ADD= "timetable_add";
     public static final String TIMETABLE_REMOVE = "timetable_remove";
