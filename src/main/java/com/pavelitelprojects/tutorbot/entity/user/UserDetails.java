@@ -34,7 +34,6 @@ public class UserDetails {
     @Column(name = "registered_at")
     LocalDateTime registeredAt;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    User user;
+    @Column(name = "now_updating_timetable")
+    String timetableId;
 }

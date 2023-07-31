@@ -23,8 +23,19 @@ public class CallbackData {
     public static final String TIMETABLE_ADD_USER = "timetable_add_user_";
 
     public static final String TIMETABLE_SHOW = "timetable_show";
-    public static final String TIMETABLE_ADD= "timetable_add";
+    public static final String TIMETABLE_ADD = "timetable_add";
     public static final String TIMETABLE_REMOVE = "timetable_remove";
+
+    public static final String TIMETABLE_ADD_TITTLE = "timetable_add_tittle_";
+    public static final String TITTLE = "tittle";
+    public static final String TIMETABLE_ADD_DESCRIPTION = "timetable_add_description_";
+    public static final String DESCRIPTION = "description";
+    public static final String TIMETABLE_BACK = "timetable_back_";
+    public static final String BACK = "back";
+
+
+    public static final String TIMETABLE_FINISH = "timetable_finish_";
+    public static final String FINISH = "finish";
 
     public static final String TASK = "task";
     public static final String TASK_CREATE = "task_create";
@@ -41,4 +52,5 @@ public class CallbackData {
 
     public static final String PROFILE_REFRESH_TOKEN = "profile_refresh_token";
     public static final String PROFILE = "profile";
+
 }

@@ -10,5 +10,4 @@ import java.util.List;
 public interface UserRepo extends JpaRepository<User, Long> {
     User findUserByChatId(Long chatId);
     User findUserByToken(String token);
-    List<User> findAllByUsersContaining(User user);
 }
