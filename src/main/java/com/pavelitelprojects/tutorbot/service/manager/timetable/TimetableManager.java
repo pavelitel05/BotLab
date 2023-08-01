@@ -110,16 +110,6 @@ public class TimetableManager extends AbstractManager {
             }
 
         }
-        if (FINISH.equals(splitCallbackData[1])) {
-            try {
-                return finish(callbackQuery, splitCallbackData, bot);
-            } catch (TelegramApiException e) {
-                log.error(e.getMessage());
-            }
-        }
-        if (BACK.equals(splitCallbackData[1])) {
-            return back(callbackQuery, splitCallbackData);
-        }
         switch (callbackData) {
             case TIMETABLE -> {
                 return mainMenu(callbackQuery);
@@ -136,7 +126,96 @@ public class TimetableManager extends AbstractManager {
                 return showDay(callbackQuery);
             }
         }
+        if (FINISH.equals(splitCallbackData[1])) {
+            try {
+                return finish(callbackQuery, splitCallbackData, bot);
+            } catch (TelegramApiException e) {
+                log.error(e.getMessage());
+            }
+        }
+        if (BACK.equals(splitCallbackData[1])) {
+            return back(callbackQuery, splitCallbackData);
+        }
+        if (splitCallbackData.length > 2 && REMOVE.equals(splitCallbackData[1])) {
+            switch (splitCallbackData[2]) {
+                case WEEKDAY -> {
+                    return removeWeekday(callbackQuery, splitCallbackData[3]);
+                }
+                case POS -> {
+                    return askConfirmation(callbackQuery, splitCallbackData);
+                }
+                case FINAL -> {
+                    try {
+                        return deleteTimetable(callbackQuery, splitCallbackData[3], bot);
+                    } catch (TelegramApiException e) {
+                        log.error(e.getMessage());
+                    }
+                }
+            }
+        }
         return null;
+    }
+
+    private BotApiMethod<?> deleteTimetable(CallbackQuery callbackQuery, String id, Bot bot) throws TelegramApiException {
+        var timeTable = timeTableRepo.findTimeTableById(UUID.fromString(id));
+        timeTable.setUsers(null);
+        timeTableRepo.delete(timeTable);
+        bot.execute(methodFactory.getAnswerCallbackQuery(
+                callbackQuery.getId(), "Запись \"" + timeTable.getTittle() + "\" успешно удалена!"
+        ));
+
+        return methodFactory.getDeleteMessage(
+                callbackQuery.getMessage().getChatId(),
+                callbackQuery.getMessage().getMessageId()
+        );
+    }
+
+    private BotApiMethod<?> askConfirmation(CallbackQuery callbackQuery, String[] splitCallbackData) {
+        return methodFactory.getEditeMessageText(
+                callbackQuery,
+                "Вы уверены, что хотите удалить запись из расписания?",
+                keyboardFactory.getInlineKeyboard(
+                        List.of("Да", "Нет"),
+                        List.of(2),
+                        List.of(TIMETABLE_REMOVE_FINAL + splitCallbackData[3],
+                                TIMETABLE_REMOVE_WEEKDAY + splitCallbackData[4])
+                )
+        );
+    }
+
+    private BotApiMethod<?> removeWeekday(CallbackQuery callbackQuery, String number) {
+        WeekDay weekDay = WeekDay.MONDAY;
+        switch (number) {
+            case "2" -> weekDay = WeekDay.TUESDAY;
+            case "3" -> weekDay = WeekDay.WEDNESDAY;
+            case "4" -> weekDay = WeekDay.THURSDAY;
+            case "5" -> weekDay = WeekDay.FRIDAY;
+            case "6" -> weekDay = WeekDay.SATURDAY;
+            case "7" -> weekDay = WeekDay.SUNDAY;
+        }
+        List<String> data = new ArrayList<>();
+        List<String> text = new ArrayList<>();
+        List<Integer> cfg = new ArrayList<>();
+        for (TimeTable timeTable : timeTableRepo.findAllByUsersContainingAndWeekDay(
+                userRepo.findUserByChatId(callbackQuery.getMessage().getChatId()),
+                weekDay
+        )) {
+            data.add(TIMETABLE_REMOVE_POS + timeTable.getId() + "_" + number);
+            text.add(timeTable.getTittle() + " " + timeTable.getHour() + ":" + timeTable.getMinute());
+            cfg.add(1);
+        }
+        cfg.add(1);
+        data.add(TIMETABLE_REMOVE);
+        text.add("Назад");
+        return methodFactory.getEditeMessageText(
+                callbackQuery,
+                "Выберете занятие которое хотите убрать из расписания",
+                keyboardFactory.getInlineKeyboard(
+                        text,
+                        cfg,
+                        data
+                )
+        );
     }
 
     private BotApiMethod<?> setDescription(Message message, User user) {
@@ -483,7 +562,7 @@ public class TimetableManager extends AbstractManager {
                         📆 Выберете день недели""",
                 keyboardFactory.getInlineKeyboard(
                         List.of(
-                                "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье",
+                                "Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс",
                                 "Назад"
                         ),
                         List.of(7, 1),
@@ -516,7 +595,7 @@ public class TimetableManager extends AbstractManager {
                 """
                         ✏️ Выберете день, в который хотите добавить занятие:""",
                 keyboardFactory.getInlineKeyboard(
-                        List.of("Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье",
+                        List.of("Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс",
                                 "\uD83D\uDD19Назад"),
                         List.of(7, 1),
                         data
@@ -525,14 +604,20 @@ public class TimetableManager extends AbstractManager {
     }
 
     private BotApiMethod<?> remove(CallbackQuery callbackQuery) {
+        List<String> data = new ArrayList<>();
+        for (int i = 1; i <= 7; i++) {
+            data.add(TIMETABLE_REMOVE_WEEKDAY + i);
+        }
+        data.add(TIMETABLE);
         return methodFactory.getEditeMessageText(
                 callbackQuery,
                 """
-                        ✂️ Выберете занятие, которое хотите удалить из вашего расписания""",
+                        ✂️ Выберете день""",
                 keyboardFactory.getInlineKeyboard(
-                        List.of("\uD83D\uDD19Назад"),
-                        List.of(1),
-                        List.of(TIMETABLE)
+                        List.of("Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс",
+                                "\uD83D\uDD19Назад"),
+                        List.of(7, 1),
+                        data
                 )
         );
     }
