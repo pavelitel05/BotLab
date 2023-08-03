@@ -1,9 +1,11 @@
 package com.pavelitelprojects.tutorbot.entity.task;
 
+import com.pavelitelprojects.tutorbot.entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -28,4 +30,16 @@ public class Task {
 
     @Column(name = "actual_message_id")
     Integer messageId;
+
+    @Column(name = "in_creation")
+    Boolean isInCreation;
+
+    @ManyToMany
+    @JoinTable(
+            joinColumns = @JoinColumn(name = "task_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"),
+            name = "tasks_teacher_student"
+    )
+    List<User> users;
+
 }
