@@ -47,6 +47,12 @@ public class CallbackData {
     public static final String TASK = "task";
     public static final String TASK_CREATE = "task_create";
     public static final String TASK_CREATE_USER = "task_create_user_";
+    public static final String TASK_CREATE_TEXT = "task_create_text_";
+    public static final String TASK_CREATE_MEDIA = "task_create_media_";
+    public static final String TASK_CREATE_CHANGE_USER = "task_create_change_user_";
+    public static final String TASK_CREATE_SEND = "task_create_send_";
+    public static final String TASK_CREATE_CANCEL = "task_create_cancel_";
+    public static final String CANCEL = "cancel";
 
 
     public static final String PROGRESS = "progress";

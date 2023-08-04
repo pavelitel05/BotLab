@@ -10,6 +10,6 @@ import java.util.UUID;
 @Repository
 public interface TaskRepo extends JpaRepository<Task, UUID> {
     boolean existsByUsersContainingAndIsInCreation(User user, Boolean isInCreation);
-    Task getTaskByUsersContainingAndIsInCreation(User user, Boolean isInCreation);
+    Task findTaskByUsersContainingAndIsInCreation(User user, Boolean isInCreation);
     void deleteByUsersContainingAndIsInCreation(User user, Boolean isInCreation);
 }

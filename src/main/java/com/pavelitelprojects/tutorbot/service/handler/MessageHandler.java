@@ -2,6 +2,7 @@ package com.pavelitelprojects.tutorbot.service.handler;
 
 import com.pavelitelprojects.tutorbot.repository.UserRepo;
 import com.pavelitelprojects.tutorbot.service.manager.search.SearchManager;
+import com.pavelitelprojects.tutorbot.service.manager.task.TaskManager;
 import com.pavelitelprojects.tutorbot.service.manager.timetable.TimetableManager;
 import com.pavelitelprojects.tutorbot.telegram.Bot;
 import lombok.AccessLevel;
@@ -17,12 +18,14 @@ public class MessageHandler {
 
     final SearchManager searchManager;
     final TimetableManager timetableManager;
+    final TaskManager taskManager;
     final UserRepo userRepo;
     @Autowired
     public MessageHandler(SearchManager searchManager,
-                          TimetableManager timetableManager, UserRepo userRepo) {
+                          TimetableManager timetableManager, TaskManager taskManager, UserRepo userRepo) {
         this.searchManager = searchManager;
         this.timetableManager = timetableManager;
+        this.taskManager = taskManager;
         this.userRepo = userRepo;
     }
 
@@ -34,6 +37,9 @@ public class MessageHandler {
             }
             case SENDING_DESCRIPTION, SENDING_TITTLE -> {
                 return timetableManager.answerMessage(message, bot);
+            }
+            case SENDING_TASK -> {
+                return taskManager.answerMessage(message, bot);
             }
         }
         return null;
