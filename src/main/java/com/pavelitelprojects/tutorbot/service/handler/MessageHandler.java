@@ -38,7 +38,7 @@ public class MessageHandler {
             case SENDING_DESCRIPTION, SENDING_TITTLE -> {
                 return timetableManager.answerMessage(message, bot);
             }
-            case SENDING_TASK -> {
+            case SENDING_TASK, SENDING_MEDIA, SENDING_TEXT -> {
                 return taskManager.answerMessage(message, bot);
             }
         }
