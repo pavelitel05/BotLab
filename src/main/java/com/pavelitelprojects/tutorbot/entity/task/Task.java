@@ -33,11 +33,17 @@ public class Task {
     @Column(name = "actual_menu_id")
     Integer menuId;
 
+    @Enumerated(EnumType.STRING)
+    CompleteStatus completeStatus;
+
     @Column(name = "in_creation")
     Boolean isInCreation;
 
     @Column(name = "has_media")
     Boolean hasMedia;
+
+    @Column(name = "is_finished")
+    Boolean isFinished;
 
     @ManyToMany
     @JoinTable(

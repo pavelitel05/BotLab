@@ -1,5 +1,10 @@
 package com.pavelitelprojects.tutorbot.service.manager.progress_control;
 
+import com.pavelitelprojects.tutorbot.entity.task.CompleteStatus;
+import com.pavelitelprojects.tutorbot.entity.task.Task;
+import com.pavelitelprojects.tutorbot.entity.user.User;
+import com.pavelitelprojects.tutorbot.repository.TaskRepo;
+import com.pavelitelprojects.tutorbot.repository.UserRepo;
 import com.pavelitelprojects.tutorbot.service.factory.AnswerMethodFactory;
 import com.pavelitelprojects.tutorbot.service.factory.KeyboardFactory;
 import com.pavelitelprojects.tutorbot.service.manager.AbstractManager;
@@ -12,7 +17,9 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
+import java.util.ArrayList;
 import java.util.List;
+
 import static com.pavelitelprojects.tutorbot.service.data.CallbackData.*;
 
 
@@ -21,11 +28,16 @@ import static com.pavelitelprojects.tutorbot.service.data.CallbackData.*;
 public class ProgressControlManager extends AbstractManager {
     final AnswerMethodFactory methodFactory;
     final KeyboardFactory keyboardFactory;
+    final UserRepo userRepo;
+    final TaskRepo taskRepo;
+
     @Autowired
     public ProgressControlManager(AnswerMethodFactory methodFactory,
-                                  KeyboardFactory keyboardFactory) {
+                                  KeyboardFactory keyboardFactory, UserRepo userRepo, TaskRepo taskRepo) {
         this.methodFactory = methodFactory;
         this.keyboardFactory = keyboardFactory;
+        this.userRepo = userRepo;
+        this.taskRepo = taskRepo;
     }
 
     @Override
@@ -49,14 +61,51 @@ public class ProgressControlManager extends AbstractManager {
                 return stat(callbackQuery);
             }
         }
+        String[] splitCallbackData = callbackData.split("_");
+        switch (splitCallbackData[1]) {
+            case USER -> {
+                return showUserStat(callbackQuery, splitCallbackData[2]);
+            }
+        }
         return null;
+    }
+
+    private BotApiMethod<?> showUserStat(CallbackQuery callbackQuery, String id) {
+        var student = userRepo.findUserByToken(id);
+        var details = student.getDetails();
+        StringBuilder text = new StringBuilder("\uD83D\uDD39Статистика по пользователю \"")
+                .append(details.getFirstName())
+                .append("\"")
+                .append("\n\n");
+        int success = taskRepo.countAllByUsersContainingAndIsFinishedAndCompleteStatus(
+                student, true, CompleteStatus.SUCCESS
+        );
+        int fail = taskRepo.countAllByUsersContainingAndIsFinishedAndCompleteStatus(
+                student, true, CompleteStatus.FAIL
+        );
+        int sum = fail + success;
+        text.append("\uD83D\uDCCDРешено - ")
+                .append(success);
+        text.append("\n\uD83D\uDCCDПровалено - ")
+                .append(fail);
+        text.append("\n\uD83D\uDCCDВсего - ")
+                .append(sum);
+        return methodFactory.getEditeMessageText(
+                callbackQuery,
+                text.toString(),
+                keyboardFactory.getInlineKeyboard(
+                        List.of("Назад"),
+                        List.of(1),
+                        List.of(PROGRESS_STAT)
+                )
+        );
     }
 
     private BotApiMethod<?> mainMenu(CallbackQuery callbackQuery) {
         return methodFactory.getEditeMessageText(
                 callbackQuery,
                 """
-                        Здесб вы можете увидеть""",
+                        Здесь вы можете увидеть статистику по каждому ученику""",
                 keyboardFactory.getInlineKeyboard(
                         List.of("Статистика успеваемости"),
                         List.of(1),
@@ -69,7 +118,7 @@ public class ProgressControlManager extends AbstractManager {
         return methodFactory.getSendMessage(
                 message.getChatId(),
                 """
-                        Здесб вы можете увидеть""",
+                        Здесь вы можете увидеть статистику по каждому ученику""",
                 keyboardFactory.getInlineKeyboard(
                         List.of("Статистика успеваемости"),
                         List.of(1),
@@ -77,15 +126,36 @@ public class ProgressControlManager extends AbstractManager {
                 )
         );
     }
-
     private BotApiMethod<?> stat(CallbackQuery callbackQuery) {
+        var teacher = userRepo.findUserByChatId(callbackQuery.getMessage().getChatId());
+        List<User> students = teacher.getUsers();
+        List<String> text = new ArrayList<>();
+        List<String> data = new ArrayList<>();
+        List<Integer> cfg = new ArrayList<>();
+        int index = 0;
+        for (User student: students) {
+            text.add(student.getDetails().getFirstName());
+            data.add(PROGRESS_USER + student.getToken());
+            if (index == 4) {
+                cfg.add(index);
+                index = 0;
+            } else {
+                index++;
+            }
+        }
+        if (index != 0) {
+            cfg.add(index);
+        }
+        data.add(PROGRESS);
+        text.add("Назад");
+        cfg.add(1);
         return methodFactory.getEditeMessageText(
                 callbackQuery,
-                "Здесь будет статистика",
+                "Выберете ученика",
                 keyboardFactory.getInlineKeyboard(
-                        List.of("Назад"),
-                        List.of(1),
-                        List.of(PROGRESS)
+                        text,
+                        cfg,
+                        data
                 )
         );
     }

@@ -1,5 +1,6 @@
 package com.pavelitelprojects.tutorbot.service.manager.task;
 
+import com.pavelitelprojects.tutorbot.entity.task.CompleteStatus;
 import com.pavelitelprojects.tutorbot.entity.task.Task;
 import com.pavelitelprojects.tutorbot.entity.user.Action;
 import com.pavelitelprojects.tutorbot.entity.user.User;
@@ -139,7 +140,7 @@ public class TaskManager extends AbstractManager {
                 }
                 case SUCCESS -> {
                     try {
-                        return sendInfo(callbackQuery, splitCallbackData[3], bot,true);
+                        return sendInfo(callbackQuery, splitCallbackData[3], bot, true);
                     } catch (TelegramApiException e) {
                         log.error(e.getMessage());
                     }
@@ -158,6 +159,7 @@ public class TaskManager extends AbstractManager {
 
     private BotApiMethod<?> sendInfo(CallbackQuery callbackQuery, String id, Bot bot, boolean status) throws TelegramApiException {
         var task = taskRepo.findById(UUID.fromString(id)).orElseThrow();
+        task.setIsFinished(true);
         var teacher = task.getTeacher();
         String studentName = task.getStudent().getDetails().getFirstName();
         bot.execute(
@@ -167,6 +169,8 @@ public class TaskManager extends AbstractManager {
         );
 
         if (status) {
+            task.setCompleteStatus(CompleteStatus.SUCCESS);
+            taskRepo.save(task);
             return methodFactory.getSendMessage(
                     teacher.getChatId(),
                     "Ученик " + studentName +
@@ -174,6 +178,8 @@ public class TaskManager extends AbstractManager {
                     null
             );
         } else {
+            task.setCompleteStatus(CompleteStatus.FAIL);
+            taskRepo.save(task);
             return methodFactory.getSendMessage(
                     teacher.getChatId(),
                     "Ученик " + studentName +
@@ -460,6 +466,7 @@ public class TaskManager extends AbstractManager {
                         userRepo.findUserByChatId(Long.valueOf(splitCallbackData[3])),
                         user
                 ))
+                .isFinished(false)
                 .isInCreation(true)
                 .build());
         user.setAction(Action.SENDING_TASK);
