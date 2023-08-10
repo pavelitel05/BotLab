@@ -3,6 +3,7 @@ package com.pavelitelprojects.tutorbot.service.data;
 public class CallbackData {
     public static final String FEEDBACK = "feedback";
     public static final String HELP = "help";
+    public static final String START = "start";
 
     public static final String TIMETABLE = "timetable";
     public static final String TIMETABLE_1 = "timetable_1";

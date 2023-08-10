@@ -175,7 +175,7 @@ public class TimetableManager extends AbstractManager {
                 callbackQuery,
                 "Вы уверены, что хотите удалить запись из расписания?",
                 keyboardFactory.getInlineKeyboard(
-                        List.of("Да", "Нет"),
+                        List.of("✅ Да", "❌ Нет"),
                         List.of(2),
                         List.of(TIMETABLE_REMOVE_FINAL + splitCallbackData[3],
                                 TIMETABLE_REMOVE_WEEKDAY + splitCallbackData[4])
@@ -206,7 +206,7 @@ public class TimetableManager extends AbstractManager {
         }
         cfg.add(1);
         data.add(TIMETABLE_REMOVE);
-        text.add("Назад");
+        text.add("\uD83D\uDD19 Назад");
         return methodFactory.getEditeMessageText(
                 callbackQuery,
                 "Выберете занятие которое хотите убрать из расписания",
@@ -255,7 +255,7 @@ public class TimetableManager extends AbstractManager {
                 callbackQuery,
                 "Введите описание:",
                 keyboardFactory.getInlineKeyboard(
-                        List.of("Назад"),
+                        List.of("\uD83D\uDD19 Назад"),
                         List.of(1),
                         List.of(TIMETABLE_BACK + id)
                 )
@@ -275,7 +275,7 @@ public class TimetableManager extends AbstractManager {
                 callbackQuery,
                 "Введите заголовок:",
                 keyboardFactory.getInlineKeyboard(
-                        List.of("Назад"),
+                        List.of("\uD83D\uDD19 Назад"),
                         List.of(1),
                         List.of(TIMETABLE_BACK + id)
                 )
@@ -379,7 +379,7 @@ public class TimetableManager extends AbstractManager {
         }
         cfg.add(1);
         data.add(TIMETABLE_ADD_HOUR + timeTable.getHour() + "_" + id);
-        text.add("Назад");
+        text.add("\uD83D\uDD19 Назад");
         timeTableRepo.save(timeTable);
 
         String messageText = "Выберете ученика";
@@ -408,7 +408,7 @@ public class TimetableManager extends AbstractManager {
             text.add(String.valueOf(i));
             data.add(TIMETABLE_ADD_MINUTE + i + "_" + id);
         }
-        text.add("Назад");
+        text.add("\uD83D\uDD19 Назад");
         switch (timeTable.getWeekDay()) {
             case MONDAY -> data.add(TIMETABLE_ADD_WEEKDAY + 1 + "_" + id);
             case TUESDAY -> data.add(TIMETABLE_ADD_WEEKDAY + 2 + "_" + id);
@@ -449,7 +449,7 @@ public class TimetableManager extends AbstractManager {
             buttonsData.add(TIMETABLE_ADD_HOUR + i + "_" + data[4]);
         }
         buttonsData.add(TIMETABLE_ADD + "_" + data[4]);
-        text.add("Назад");
+        text.add("\uD83D\uDD19 Назад");
         timeTableRepo.save(timeTable);
         return methodFactory.getEditeMessageText(
                 callbackQuery,
@@ -548,7 +548,7 @@ public class TimetableManager extends AbstractManager {
                 callbackQuery,
                 text.toString(),
                 keyboardFactory.getInlineKeyboard(
-                        List.of("\uD83D\uDD19Назад"),
+                        List.of("\uD83D\uDD19 Назад"),
                         List.of(1),
                         List.of(TIMETABLE_SHOW)
                 )
@@ -563,7 +563,7 @@ public class TimetableManager extends AbstractManager {
                 keyboardFactory.getInlineKeyboard(
                         List.of(
                                 "Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс",
-                                "Назад"
+                                "\uD83D\uDD19 Назад"
                         ),
                         List.of(7, 1),
                         List.of(
@@ -596,7 +596,7 @@ public class TimetableManager extends AbstractManager {
                         ✏️ Выберете день, в который хотите добавить занятие:""",
                 keyboardFactory.getInlineKeyboard(
                         List.of("Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс",
-                                "\uD83D\uDD19Назад"),
+                                "\uD83D\uDD19 Назад"),
                         List.of(7, 1),
                         data
                 )
@@ -615,7 +615,7 @@ public class TimetableManager extends AbstractManager {
                         ✂️ Выберете день""",
                 keyboardFactory.getInlineKeyboard(
                         List.of("Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс",
-                                "\uD83D\uDD19Назад"),
+                                "\uD83D\uDD19 Назад"),
                         List.of(7, 1),
                         data
                 )

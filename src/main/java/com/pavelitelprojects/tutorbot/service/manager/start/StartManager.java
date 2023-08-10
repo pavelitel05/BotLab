@@ -57,7 +57,22 @@ public class StartManager extends AbstractManager {
 
     @Override
     public BotApiMethod<?> answerCallbackQuery(CallbackQuery callbackQuery, Bot bot) {
-        return null;
+        return methodFactory.getEditeMessageText(
+                callbackQuery,
+                """
+                        🖖Приветствую в Tutor-Bot, инструменте для упрощения взаимодействия репититора и ученика.
+                                                
+                        Что бот умеет?
+                        📌 Составлять расписание
+                        📌 Прикреплять домашние задания
+                        📌 Ввести контроль успеваемости                        
+                        """,
+                keyboardFactory.getInlineKeyboard(
+                        List.of("Помощь", "Обратная связь"),
+                        List.of(2),
+                        List.of(HELP, FEEDBACK)
+                )
+        );
     }
 
 }

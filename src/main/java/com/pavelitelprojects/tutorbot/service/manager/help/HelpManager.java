@@ -12,6 +12,10 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
+import java.util.List;
+
+import static com.pavelitelprojects.tutorbot.service.data.CallbackData.START;
+
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class HelpManager extends AbstractManager {
@@ -30,17 +34,19 @@ public class HelpManager extends AbstractManager {
                 message.getChatId(),
                 """
                         📍 Доступные команды:
-                        - start
-                        - help
-                        - feedback
+                        Отображаются в панели "меню"
                                                 
                         📍 Доступные функции:
-                        - Расписание
-                        - Домашнее задание
-                        - Контроль успеваемости
+                        - Расписание (/timetable)
+                        - Домашнее задание (/task)
+                        - Контроль успеваемости (/progress)
                                                 
                         """,
-                null
+                keyboardFactory.getInlineKeyboard(
+                        List.of("Главное меню"),
+                        List.of(1),
+                        List.of(START)
+                )
 
         );
     }
@@ -50,17 +56,19 @@ public class HelpManager extends AbstractManager {
                 callbackQuery,
                 """
                         📍 Доступные команды:
-                        - start
-                        - help
-                        - feedback
+                        Отображаются в панели "меню"
                                                 
                         📍 Доступные функции:
-                        - Расписание
-                        - Домашнее задание
-                        - Контроль успеваемости
+                        - Расписание (/timetable)
+                        - Домашнее задание (/task)
+                        - Контроль успеваемости (/progress)
                                                 
                         """,
-                null
+                keyboardFactory.getInlineKeyboard(
+                        List.of("\uD83D\uDD19 Назад"),
+                        List.of(1),
+                        List.of(START)
+                )
         );
     }
     @Override

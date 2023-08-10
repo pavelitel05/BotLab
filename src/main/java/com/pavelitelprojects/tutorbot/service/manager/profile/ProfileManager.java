@@ -62,7 +62,7 @@ public class ProfileManager extends AbstractManager {
                 chatId,
                 getProfileText(chatId),
                 keyboardFactory.getInlineKeyboard(
-                        List.of("Обновить токен"),
+                        List.of("♻\uFE0F Обновить токен"),
                         List.of(1),
                         List.of(PROFILE_REFRESH_TOKEN)
                 )
@@ -75,7 +75,7 @@ public class ProfileManager extends AbstractManager {
                 callbackQuery,
                 getProfileText(chatId),
                 keyboardFactory.getInlineKeyboard(
-                        List.of("Обновить токен"),
+                        List.of("♻\uFE0F Обновить токен"),
                         List.of(1),
                         List.of(PROFILE_REFRESH_TOKEN)
                 )

@@ -6,12 +6,12 @@ import com.pavelitelprojects.tutorbot.service.manager.help.HelpManager;
 import com.pavelitelprojects.tutorbot.service.manager.profile.ProfileManager;
 import com.pavelitelprojects.tutorbot.service.manager.progress_control.ProgressControlManager;
 import com.pavelitelprojects.tutorbot.service.manager.search.SearchManager;
+import com.pavelitelprojects.tutorbot.service.manager.start.StartManager;
 import com.pavelitelprojects.tutorbot.service.manager.task.TaskManager;
 import com.pavelitelprojects.tutorbot.service.manager.timetable.TimetableManager;
 import com.pavelitelprojects.tutorbot.telegram.Bot;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
@@ -26,6 +26,7 @@ public class CallbackQueryHandler {
     final FeedbackManager feedbackManager;
     final TimetableManager timetableManager;
     final TaskManager taskManager;
+    final StartManager startManager;
     final AuthManager authManager;
     final ProfileManager profileManager;
     final SearchManager searchManager;
@@ -35,7 +36,7 @@ public class CallbackQueryHandler {
                                 FeedbackManager feedbackManager,
                                 TimetableManager timetableManager,
                                 TaskManager taskManager,
-                                ProgressControlManager progressControlManager,
+                                StartManager startManager, ProgressControlManager progressControlManager,
                                 AuthManager authManager,
                                 ProfileManager profileManager,
                                 SearchManager searchManager) {
@@ -43,6 +44,7 @@ public class CallbackQueryHandler {
         this.feedbackManager = feedbackManager;
         this.timetableManager = timetableManager;
         this.taskManager = taskManager;
+        this.startManager = startManager;
         this.progressControlManager = progressControlManager;
         this.authManager = authManager;
         this.profileManager = profileManager;
@@ -78,6 +80,9 @@ public class CallbackQueryHandler {
             }
             case HELP -> {
                 return helpManager.answerCallbackQuery(callbackQuery, bot);
+            }
+            case START -> {
+                return startManager.answerCallbackQuery(callbackQuery, bot);
             }
         }
         return null;

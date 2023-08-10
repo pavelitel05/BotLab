@@ -2,6 +2,7 @@ package com.pavelitelprojects.tutorbot.service.manager.progress_control;
 
 import com.pavelitelprojects.tutorbot.entity.task.CompleteStatus;
 import com.pavelitelprojects.tutorbot.entity.task.Task;
+import com.pavelitelprojects.tutorbot.entity.user.Role;
 import com.pavelitelprojects.tutorbot.entity.user.User;
 import com.pavelitelprojects.tutorbot.repository.TaskRepo;
 import com.pavelitelprojects.tutorbot.repository.UserRepo;
@@ -42,6 +43,10 @@ public class ProgressControlManager extends AbstractManager {
 
     @Override
     public BotApiMethod<?> answerCommand(Message message, Bot bot) {
+        var user = userRepo.findUserByChatId(message.getChatId());
+        if (Role.STUDENT.equals(user.getRole())) {
+            return null;
+        }
         return mainMenu(message);
     }
 
@@ -94,7 +99,7 @@ public class ProgressControlManager extends AbstractManager {
                 callbackQuery,
                 text.toString(),
                 keyboardFactory.getInlineKeyboard(
-                        List.of("Назад"),
+                        List.of("\uD83D\uDD19 Назад"),
                         List.of(1),
                         List.of(PROGRESS_STAT)
                 )
@@ -107,7 +112,7 @@ public class ProgressControlManager extends AbstractManager {
                 """
                         Здесь вы можете увидеть статистику по каждому ученику""",
                 keyboardFactory.getInlineKeyboard(
-                        List.of("Статистика успеваемости"),
+                        List.of("\uD83D\uDCCA Статистика успеваемости"),
                         List.of(1),
                         List.of(PROGRESS_STAT)
                 )
@@ -120,7 +125,7 @@ public class ProgressControlManager extends AbstractManager {
                 """
                         Здесь вы можете увидеть статистику по каждому ученику""",
                 keyboardFactory.getInlineKeyboard(
-                        List.of("Статистика успеваемости"),
+                        List.of("\uD83D\uDCCA Статистика успеваемости"),
                         List.of(1),
                         List.of(PROGRESS_STAT)
                 )
@@ -147,11 +152,11 @@ public class ProgressControlManager extends AbstractManager {
             cfg.add(index);
         }
         data.add(PROGRESS);
-        text.add("Назад");
+        text.add("\uD83D\uDD19 Назад");
         cfg.add(1);
         return methodFactory.getEditeMessageText(
                 callbackQuery,
-                "Выберете ученика",
+                "\uD83D\uDC64 Выберете ученика",
                 keyboardFactory.getInlineKeyboard(
                         text,
                         cfg,

@@ -12,6 +12,10 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
+import java.util.List;
+
+import static com.pavelitelprojects.tutorbot.service.data.CallbackData.START;
+
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FeedbackManager extends AbstractManager {
@@ -34,7 +38,11 @@ public class FeedbackManager extends AbstractManager {
                         LinkedIn - https://linkedin.com/in/павел-кирсанов-62b762263
                         Telegram - https://t.me/pavelitel05
                         """,
-                null
+                keyboardFactory.getInlineKeyboard(
+                        List.of("Главное меню"),
+                        List.of(1),
+                        List.of(START)
+                )
         );
     }
     @Override
@@ -47,7 +55,11 @@ public class FeedbackManager extends AbstractManager {
                         LinkedIn - https://linkedin.com/in/павел-кирсанов-62b762263
                         Telegram - https://t.me/pavelitel05
                         """,
-                null
+                keyboardFactory.getInlineKeyboard(
+                        List.of("\uD83D\uDD19 Назад"),
+                        List.of(1),
+                        List.of(START)
+                )
         );
     }
     @Override

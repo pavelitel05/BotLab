@@ -86,7 +86,7 @@ public class SearchManager extends AbstractManager {
                     message.getChatId(),
                     "По данному токену не найдено ни одного пользователя\n\nПовторите попытку!",
                     keyboardFactory.getInlineKeyboard(
-                            List.of("Отмена операции"),
+                            List.of("❌ Отмена операции"),
                             List.of(1),
                             List.of(SEARCH_CANCEL)
                     )
@@ -104,7 +104,7 @@ public class SearchManager extends AbstractManager {
             userRepo.save(userTwo);
             return methodFactory.getSendMessage(
                     message.getChatId(),
-                    "Связь успешно установлена",
+                    "✅ Связь успешно установлена",
                     null
             );
         }
@@ -113,7 +113,7 @@ public class SearchManager extends AbstractManager {
                 "Вы не можете установить соединение с учителем, если и вы им являетесь" +
                         " или то же самое, если вы ученик\n\nПовторите попытку!",
                 keyboardFactory.getInlineKeyboard(
-                        List.of("Отмена операции"),
+                        List.of("❌ Отмена операции"),
                         List.of(1),
                         List.of(SEARCH_CANCEL)
                 )
@@ -146,7 +146,7 @@ public class SearchManager extends AbstractManager {
                 chatId,
                 "Отправьте токен",
                 keyboardFactory.getInlineKeyboard(
-                        List.of("Отмена операции"),
+                        List.of("❌ Отмена операции"),
                         List.of(1),
                         List.of(SEARCH_CANCEL)
                 )
