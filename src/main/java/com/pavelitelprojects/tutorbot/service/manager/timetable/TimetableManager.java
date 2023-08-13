@@ -196,9 +196,10 @@ public class TimetableManager extends AbstractManager {
         List<String> data = new ArrayList<>();
         List<String> text = new ArrayList<>();
         List<Integer> cfg = new ArrayList<>();
-        for (TimeTable timeTable : timeTableRepo.findAllByUsersContainingAndWeekDay(
+        for (TimeTable timeTable : timeTableRepo.findAllByUsersContainingAndWeekDayAndInCreation(
                 userRepo.findUserByChatId(callbackQuery.getMessage().getChatId()),
-                weekDay
+                weekDay,
+                false
         )) {
             data.add(TIMETABLE_REMOVE_POS + timeTable.getId() + "_" + number);
             text.add(timeTable.getTittle() + " " + timeTable.getHour() + ":" + timeTable.getMinute());
@@ -528,7 +529,7 @@ public class TimetableManager extends AbstractManager {
             case "7" -> weekDay = WeekDay.SUNDAY;
         }
         List<TimeTable> timeTableList = timeTableRepo
-                .findAllByUsersContainingAndWeekDay(user, weekDay);
+                .findAllByUsersContainingAndWeekDayAndInCreation(user, weekDay, false);
         StringBuilder text = new StringBuilder();
         if (timeTableList == null || timeTableList.isEmpty()) {
             text.append("У вас нет занятий в этот день!");
